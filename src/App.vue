@@ -4,27 +4,26 @@ import { ref } from "vue";
 
 const provider = new BrowserProvider(window.ethereum);
 
-const wallet = new Wallet(
-  "0x431c847772f893a2eceab33d03fb4e599be4ec4ff0c001da92ecd5cf603b1d32",
-  provider
+const walletPrivate = ref("");
+const sendData = ref(
+  'data:,{"p":"prc-20","op":"mint","tick":"pols","amt":"100000000"}'
 );
 
 const isStart = ref(false);
-const count = ref(100);
 const fainedCount = ref(0);
 const onClickStart = async () => {
   console.log("start--------");
   isStart.value = true;
+  const wallet = new Wallet(walletPrivate.value, provider);
   while (true) {
     try {
       const TransactionResponse = await wallet.sendTransaction({
         to: wallet.address,
         value: 0,
-        data: `0x${'data:,{"p":"prc-20","op":"mint","tick":"pols","amt":"100000000"}'
+        data: `0x${sendData.value
           .split("")
           .map((char) => char.charCodeAt(0).toString(16))
           .join("")}`,
-        // gasLimit: 22024,
         // gasPrice: 198884659249n,
       });
       console.log("TransactionResponse", TransactionResponse);
@@ -34,17 +33,19 @@ const onClickStart = async () => {
       fainedCount.value += 1;
     }
   }
-  console.log("finish--------");
-  isStart.value = false;
 };
 </script>
 
 <template>
-  <div>
-    <!-- <label :class="{ disabled: isStart }">
-      剩余Mint次数:
-      <input type="text" v-model="count" :disabled="isStart" />
-    </label> -->
+  <div class="box">
+    <label for=""
+      >Wallet私钥：
+      <input type="text" v-model="walletPrivate" />
+    </label>
+    <label for=""
+      >写入数据：
+      <input type="text" v-model="sendData" />
+    </label>
     <template v-if="isStart"> mint 中.... </template>
     <template v-else>
       <button class="button" @click="onClickStart">start</button>
@@ -58,7 +59,21 @@ const onClickStart = async () => {
   cursor: no-drop;
 }
 
+input {
+  width: 800px;
+  height: 30px;
+  font-size: 18px;
+}
+
 .button {
+  width: 200px;
+  height: 50px;
   margin-left: 10px;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 </style>
