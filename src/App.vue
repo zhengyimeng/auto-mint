@@ -14,6 +14,7 @@ const fainedCount = ref(0);
 const onClickStart = async () => {
   console.log("start--------");
   isStart.value = true;
+  if (!walletPrivate.value) return;
   const wallet = new Wallet(walletPrivate.value, provider);
   while (true) {
     try {
